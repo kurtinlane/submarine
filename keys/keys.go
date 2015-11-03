@@ -5,6 +5,7 @@ import (
 	"github.com/go-martini/martini"
 	"sync"
 	"net/http"
+	"encoding/json"
 )
 
 type Key struct {
@@ -34,9 +35,22 @@ func (k *Keychain) GetPath() string {
 
 // WebGet implements webservice.WebGet.
 func (k *Keychain) WebGet(params martini.Params) (int, string) {
+	
+	key := &Key{
+		"troy@mail.com",
+		"13fkldsjf42kj",
+		1,
+		"kfaldfjlskfjk",
+	}
 
+	encodedEntry, err := json.Marshal(key)
+	
+	if err != nil {
+		return http.StatusInternalServerError, "internal error"
+	}
+	
 	// Return encoded entry.
-	return http.StatusOK, "hello"
+	return http.StatusOK, string(encodedEntry)
 }
 
 // WebPost implements webservice.WebPost.
