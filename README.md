@@ -12,7 +12,7 @@ Here's the idea. A service provider--[bettrnet](http://bettrnet.com), for exampl
 
 Bettrnet uses submarine to give customer's power of their own data. When User signs up with bettrnet, bettrnet sends the User's email address to submarine. Submarine creates a random string that belongs to User and returns it to bettrnet. Submarine also sends instructions to User on how they can use submarine to control their data.
 
-Bettrnet uses this random string as an encryption key to encrypt User's data. Everytime User logs in to bettrnet, bettrnet has to ask submarine for User's key. 
+Bettrnet uses this random string as an encryption key to encrypt User's data. Everytime User logs in to bettrnet, bettrnet has to ask submarine for User's key in order to decrypt User's data. 
 
 If at some point User does not trust bettrnet with their data anymore, User can delete their bettrnet key through submarine. Now, bettrnet no longer has access to any data that it encrypted with User's key.
 
