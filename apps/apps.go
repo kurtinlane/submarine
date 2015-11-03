@@ -3,6 +3,7 @@ package apps
 import (
 	"sync"
 	"fmt"
+	"github.com/nu7hatch/gouuid"
 )
 
 type App struct {
@@ -41,7 +42,7 @@ func (a *Apps) AddApp(name string) *App {
 	// Create new entry with the given data and the computed newId.
 	newEntry := &App{
 		newId,
-		"123", //GetApiKey(),
+		getUuid(),
 		name,
 	}
 
@@ -50,4 +51,10 @@ func (a *Apps) AddApp(name string) *App {
 
 	// Return the Id for the new entry.
 	return newEntry
+}
+
+func getUuid() string {
+	u, _ := uuid.NewV4()
+	
+	return u.String()
 }
