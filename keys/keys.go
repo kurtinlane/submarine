@@ -10,7 +10,7 @@ type Key struct {
   Id int
   Email string //we will actually not want to store their email at all, just the hash
   MD5 string
-  Key string
+  DO_NO_STORE_DO_NOT_LOG_key string
   App string //Id for which application this key belongs to
 }
 
@@ -39,8 +39,8 @@ func (k *Keychain) AddKey(email, app string) *Key {
 	newEntry := &Key{
 		newId,
 		email,
-		"123",
-		"345",
+		"123", //need to create hash of email address
+		"345", // need to create random string to act as key
 		app,
 	}
 
