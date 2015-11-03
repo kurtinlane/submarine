@@ -3,6 +3,7 @@ package main
 import (
   "github.com/go-martini/martini"
   "github.com/kurtinlane/submarine/keys"
+  "github.com/kurtinlane/submarine/apps"
   "net/http"
 )
 
@@ -10,8 +11,10 @@ func main() {
   m := martini.Classic()
   
   keychain := keys.NewKeychain()
+  apps := apps.NewAppsList()
   
   registerWebService(keychain, m)
+  registerWebService(apps, m)
   
   m.Run()
 }
