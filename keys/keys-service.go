@@ -19,7 +19,7 @@ func (k *Keychain) GetPath() string {
 func (k *Keychain) WebGet(params martini.Params) (int, string) {
 	if len(params) == 0 {
 		// No params. Return entire collection encoded as JSON.
-		encodedEntries, err := json.Marshal(k.GetAllEntries())
+		encodedEntries, err := json.Marshal(k.GetAllKeys())
 		if err != nil {
 			// Failed encoding collection.
 			return http.StatusInternalServerError, "internal error"
@@ -37,7 +37,7 @@ func (k *Keychain) WebGet(params martini.Params) (int, string) {
 	}
 
 	// Get entry identified by id.
-	entry, err := k.GetEntry(id)
+	entry, err := k.GetKey(id)
 	if err != nil {
 		// Entry not found.
 		return http.StatusNotFound, "entry not found"

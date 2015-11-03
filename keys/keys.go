@@ -53,7 +53,7 @@ func (k *Keychain) AddKey(email, app string) *Key {
 
 // GetEntry returns the entry identified by the given id or an error if it can
 // not find it.
-func (k *Keychain) GetEntry(id int) (*Key, error) {
+func (k *Keychain) GetKey(id int) (*Key, error) {
 	// Check if we have a valid id.
 	if id < 0 || id >= len(k.keys) ||
 		k.keys[id] == nil {
@@ -65,7 +65,7 @@ func (k *Keychain) GetEntry(id int) (*Key, error) {
 }
 
 // GetAllEntries returns all non-nil entries in the Guest Book.
-func (k *Keychain) GetAllEntries() []*Key {
+func (k *Keychain) GetAllKeys() []*Key {
 	// Placeholder for the entries we will be returning.
 	entries := make([]*Key, 0)
 
@@ -81,7 +81,7 @@ func (k *Keychain) GetAllEntries() []*Key {
 }
 
 // RemoveAllEntries removes all entries from the Guest Book.
-func (k *Keychain) RemoveAllEntries() {
+func (k *Keychain) RemoveAllKeys() {
 	// Acquire our lock and make sure it will be released.
 	k.mutex.Lock()
 	defer k.mutex.Unlock()
