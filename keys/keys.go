@@ -1,18 +1,17 @@
-
 package keys
 
+
 import (
-	"github.com/go-martini/martini"
+	"fmt"
 	"sync"
-	"net/http"
-	"encoding/json"
 )
 
 type Key struct {
+  Id int
   Email string //we will actually not want to store their email at all, just the hash
   MD5 string
-  App int //Id for which application this key belongs to
   Key string
+  App string //Id for which application this key belongs to
 }
 
 type Keychain struct {
@@ -27,38 +26,66 @@ func NewKeychain() *Keychain {
 	}
 }
 
-// GetPath implements webservice.GetPath.
-func (k *Keychain) GetPath() string {
-	// Associate this service with http://host:port/keys.
-	return "/keys"
-}
+// AddEntry adds a new GuestBookEntry with the provided data.
+func (k *Keychain) AddKey(email, app string) *Key {
+	// Acquire our lock and make sure it will be released.
+	k.mutex.Lock()
+	defer k.mutex.Unlock()
 
-// WebGet implements webservice.WebGet.
-func (k *Keychain) WebGet(params martini.Params) (int, string) {
-	
-	key := &Key{
-		"troy@mail.com",
-		"13fkldsjf42kj",
-		1,
-		"kfaldfjlskfjk",
+	// Get an id for this entry.
+	newId := len(k.keys)
+
+	// Create new entry with the given data and the computed newId.
+	newEntry := &Key{
+		newId,
+		email,
+		"123",
+		"345",
+		app,
 	}
 
-	encodedEntry, err := json.Marshal(key)
-	
-	if err != nil {
-		return http.StatusInternalServerError, "internal error"
-	}
-	
-	// Return encoded entry.
-	return http.StatusOK, string(encodedEntry)
+	// Add entry to the Guest Book.
+	k.keys = append(k.keys, newEntry)
+
+	// Return the Id for the new entry.
+	return newEntry
 }
 
-// WebPost implements webservice.WebPost.
-func (k *Keychain) WebPost(params martini.Params,
-	req *http.Request) (int, string) {
-	// Make sure Body is closed when we are done.
-	defer req.Body.Close()
+// GetEntry returns the entry identified by the given id or an error if it can
+// not find it.
+func (k *Keychain) GetEntry(id int) (*Key, error) {
+	// Check if we have a valid id.
+	if id < 0 || id >= len(k.keys) ||
+		k.keys[id] == nil {
+		return nil, fmt.Errorf("invalid id")
+	}
 
-	// Everything is fine.
-	return http.StatusOK, "new entry created"
+	// Return the associated entry.
+	return k.keys[id], nil
+}
+
+// GetAllEntries returns all non-nil entries in the Guest Book.
+func (k *Keychain) GetAllEntries() []*Key {
+	// Placeholder for the entries we will be returning.
+	entries := make([]*Key, 0)
+
+	// Iterate through all existig entries.
+	for _, entry := range k.keys {
+		if entry != nil {
+			// Entry is not nil, so we want to return it.
+			entries = append(entries, entry)
+		}
+	}
+
+	return entries
+}
+
+// RemoveAllEntries removes all entries from the Guest Book.
+func (k *Keychain) RemoveAllEntries() {
+	// Acquire our lock and make sure it will be released.
+	k.mutex.Lock()
+	defer k.mutex.Unlock()
+
+	// Reset guestbook to a new empty one.
+	k.keys = []*Key{}
 }
