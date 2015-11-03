@@ -39,7 +39,7 @@ type WebService interface {
 }
 
 func registerWebService(webService WebService,
-	classicMartini *martini.ClassicMartini, middleware[]func) {
+	classicMartini *martini.ClassicMartini) {
 	path := webService.GetPath()
 
 	classicMartini.Get(path, webService.WebGet)
