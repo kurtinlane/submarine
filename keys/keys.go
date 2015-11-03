@@ -6,6 +6,7 @@ import (
 	"sync"
 	"crypto/md5"
 	"encoding/hex"
+	"github.com/nu7hatch/gouuid"
 )
 
 type Key struct {
@@ -42,7 +43,7 @@ func (k *Keychain) AddKey(email, app string) *Key {
 		newId,
 		email,
 		GetMD5Hash(email), 
-		"345", // need to create random string to act as key
+		getUuid(), // need to create random string to act as key
 		app,
 	}
 
@@ -96,4 +97,10 @@ func GetMD5Hash(text string) string {
     hasher := md5.New()
     hasher.Write([]byte(text))
     return hex.EncodeToString(hasher.Sum(nil))
+}
+
+func getUuid() string {
+	u, _ := uuid.NewV4()
+	
+	return u.String()
 }
