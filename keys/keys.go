@@ -4,7 +4,7 @@ package keys
 import (
 	"fmt"
 	"sync"
-	"crypto/md5"
+	"crypto/sha256"
 	"encoding/hex"
 	"github.com/nu7hatch/gouuid"
 )
@@ -12,7 +12,7 @@ import (
 type Key struct {
   Id int
   Email string //we will actually not want to store their email at all, just the hash
-  MD5 string
+  Sha256 string
   DO_NO_STORE_DO_NOT_LOG_key string
   App string //Id for which application this key belongs to
 }
@@ -42,7 +42,7 @@ func (k *Keychain) AddKey(email, app string) *Key {
 	newEntry := &Key{
 		newId,
 		email,
-		GetMD5Hash(email), 
+		GetSha256Hash(email), 
 		getUuid(), // need to create random string to act as key
 		app,
 	}
@@ -93,8 +93,8 @@ func (k *Keychain) RemoveAllKeys() {
 	k.keys = []*Key{}
 }
 
-func GetMD5Hash(text string) string {
-    hasher := md5.New()
+func GetSha256Hash(text string) string {
+    hasher := sha256.New()
     hasher.Write([]byte(text))
     return hex.EncodeToString(hasher.Sum(nil))
 }
