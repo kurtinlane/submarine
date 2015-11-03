@@ -6,7 +6,7 @@ it's like two people in a submarine turning their keys to launch a nuclear bomb 
 
 __A webserver that takes an email and returns a key.__
 
-__Join our slack channel: [submarinekey.slack.com](https://submarinekey.slack.com)__
+Join our slack channel: [submarinekey.slack.com](https://submarinekey.slack.com)
 
 
 # overview
