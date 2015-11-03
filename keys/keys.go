@@ -4,6 +4,8 @@ package keys
 import (
 	"fmt"
 	"sync"
+	"crypto/md5"
+	"encoding/hex"
 )
 
 type Key struct {
@@ -39,7 +41,7 @@ func (k *Keychain) AddKey(email, app string) *Key {
 	newEntry := &Key{
 		newId,
 		email,
-		"123", //need to create hash of email address
+		GetMD5Hash(email), 
 		"345", // need to create random string to act as key
 		app,
 	}
@@ -88,4 +90,10 @@ func (k *Keychain) RemoveAllKeys() {
 
 	// Reset guestbook to a new empty one.
 	k.keys = []*Key{}
+}
+
+func GetMD5Hash(text string) string {
+    hasher := md5.New()
+    hasher.Write([]byte(text))
+    return hex.EncodeToString(hasher.Sum(nil))
 }
