@@ -34,6 +34,17 @@ func (a *Apps) GetApp(id int) (*App, error) {
 	return a.apps[id], nil
 }
 
+func (a *Apps) GetAppWithApiKey(apiKey string) (*App, error) {
+	
+	for i := 0; i < len(a.apps); i++ {
+		if a.apps[i].SECRET_API_KEY == apiKey {
+			return a.apps[i], nil
+		}
+	}
+	
+	return nil, fmt.Errorf("invalid key")
+}
+
 func (a *Apps) AddApp(name string) *App {
 	// Acquire our lock and make sure it will be released.
 	a.mutex.Lock()
