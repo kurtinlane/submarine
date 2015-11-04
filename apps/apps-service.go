@@ -4,6 +4,7 @@ import (
 	"github.com/go-martini/martini"
 	"net/http"
 	"encoding/json"
+	"strconv"
 	"io/ioutil"
 )
 
@@ -16,24 +17,32 @@ func (a *Apps) GetPath() string {
 // WebGet implements webservice.WebGet.
 func (a *Apps) WebGet(params martini.Params) (int, string) {
 	if len(params) == 0 {
-		return http.StatusBadRequest, "must provide api key"
+		// Failed encoding collection.
+		return http.StatusBadRequest, "bad request"
 	}
 
 	// Convert id to integer.
-	apiKey := params["API-KEY"]
-
-	app, err := a.GetApp(apiKey)
+	id, err := strconv.Atoi(params["id"])
 	if err != nil {
-		return http.StatusInternalServerError, "internal error"
+		// Id was not a number.
+		return http.StatusBadRequest, "invalid entry id"
 	}
-	
+
+	// Get entry identified by id.
+	entry, err := a.GetApp(id)
+	if err != nil {
+		// Entry not found.
+		return http.StatusNotFound, "entry not found"
+	}
+
 	// Encode entry in JSON.
-	encodedEntry, err := json.Marshal(app)
+	encodedEntry, err := json.Marshal(entry)
 	if err != nil {
 		// Failed encoding entry.
 		return http.StatusInternalServerError, "internal error"
 	}
-	
+
+	// Return encoded entry.
 	return http.StatusOK, string(encodedEntry)
 }
 

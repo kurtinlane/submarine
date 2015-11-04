@@ -13,8 +13,8 @@ type Key struct {
   Id int
   Email string //we will actually not want to store their email at all, just the hash
   Sha256 string
-  DO_NO_STORE_DO_NOT_LOG_key string
-  App string //Id for which application this key belongs to
+  DO_NO_STORE_DO_NOT_LOG string
+  App int //Id for which application this key belongs to
 }
 
 type Keychain struct {
@@ -30,7 +30,7 @@ func NewKeychain() *Keychain {
 }
 
 // AddEntry adds a new GuestBookEntry with the provided data.
-func (k *Keychain) AddKey(email, app string) *Key {
+func (k *Keychain) AddKey(email string, app int) *Key {
 	// Acquire our lock and make sure it will be released.
 	k.mutex.Lock()
 	defer k.mutex.Unlock()

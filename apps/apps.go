@@ -24,11 +24,14 @@ func NewAppsList() *Apps {
 	}
 }
 
-func (a *Apps) GetApp(apiKey string) (*App, error) {
+func (a *Apps) GetApp(id int) (*App, error) {
+	if id < 0 || id >= len(a.apps) ||
+		a.apps[id] == nil {
+		return nil, fmt.Errorf("invalid id")
+	}
 
 	// Return the associated entry.
-	//return nil, nil
-	return nil, fmt.Errorf("not implemented")
+	return a.apps[id], nil
 }
 
 func (a *Apps) AddApp(name string) *App {
