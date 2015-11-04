@@ -1,22 +1,24 @@
 package main
 
 import (
-  "github.com/go-martini/martini"
-  "github.com/kurtinlane/submarine/keys"
-  "github.com/kurtinlane/submarine/apps"
-  "net/http"
+	"github.com/go-martini/martini"
+	"github.com/kurtinlane/submarine/apps"
+	"github.com/kurtinlane/submarine/keys"
+	"net/http"
 )
 
 func main() {
-  m := martini.Classic()
-  
-  keychain := keys.NewKeychain()
-  apps := apps.NewAppsList()
-  
-  registerWebService(keychain, m)
-  registerWebService(apps, m)
-  
-  m.Run()
+	
+	//Separate apis because use different middleware to authenticate requests... might be a better way to handle this
+	publicApi := martini.Classic()
+	keychain := keys.NewKeychain()
+	registerWebService(keychain, publicApi)
+	go publicApi.Run()
+	
+	privateApi := martini.Classic()
+	apps := apps.NewAppsList()
+	registerWebService(apps, privateApi)
+	privateApi.RunOnAddr(":3001")
 }
 
 // WebService is the interface that should be implemented by types that want to
