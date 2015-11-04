@@ -13,10 +13,11 @@ func main() {
 	publicApi := martini.Classic()
 	keychain := keys.NewKeychain()
 	registerWebService(keychain, publicApi)
+	publicApi.Use(apps.ResolveApp)
 	go publicApi.Run()
 	
 	privateApi := martini.Classic()
-	apps := apps.NewAppsList()
+	apps := apps.RetreiveAppsList()
 	registerWebService(apps, privateApi)
 	privateApi.RunOnAddr(":3001")
 }

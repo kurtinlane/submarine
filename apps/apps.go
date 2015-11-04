@@ -17,11 +17,13 @@ type Apps struct {
 	mutex *sync.Mutex
 }
 
-func NewAppsList() *Apps {
-	return &Apps{
-		make([]*App, 0),
-		new(sync.Mutex),
-	}
+var a = &Apps{
+	make([]*App, 0),
+	new(sync.Mutex),
+}
+
+func RetreiveAppsList() *Apps {
+	return a
 }
 
 func (a *Apps) GetApp(id int) (*App, error) {
@@ -34,7 +36,7 @@ func (a *Apps) GetApp(id int) (*App, error) {
 	return a.apps[id], nil
 }
 
-func (a *Apps) GetAppWithApiKey(apiKey string) (*App, error) {
+func GetAppWithApiKey(apiKey string) (*App, error) {
 	
 	for i := 0; i < len(a.apps); i++ {
 		if a.apps[i].SECRET_API_KEY == apiKey {
