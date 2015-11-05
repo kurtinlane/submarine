@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"github.com/go-martini/martini"
@@ -7,8 +7,7 @@ import (
 	"net/http"
 )
 
-func main() {
-	
+func StartServer() {
 	//Separate apis because use different middleware to authenticate requests... might be a better way to handle this
 	publicApi := martini.Classic()
 	keychain := keys.NewKeychain()

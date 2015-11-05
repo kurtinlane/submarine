@@ -82,9 +82,11 @@ func (k *Keychain) WebPost(params martini.Params,
 	}
 
 	// Add entry provided by the user.
-	k.AddKey(key.Email, key.App)
+	createdKey := k.AddKey(key.Email, key.App)
+	
+	encodedKey, err := json.Marshal(createdKey)
 
 	// Everything is fine.
-	return http.StatusOK, "new entry created"
+	return http.StatusOK, string(encodedKey)
 	
 }

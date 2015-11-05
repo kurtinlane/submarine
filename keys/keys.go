@@ -6,14 +6,15 @@ import (
 	"sync"
 	"crypto/sha256"
 	"encoding/hex"
-	"github.com/nu7hatch/gouuid"
+	"crypto/rand"
+	"encoding/base64"
 )
 
 type Key struct {
   Id int
   Email string //we will actually not want to store their email at all, just the hash
   Sha256 string
-  DO_NO_STORE_DO_NOT_LOG string
+  DO_NOT_STORE_DO_NOT_LOG string
   App int //Id for which application this key belongs to
 }
 
@@ -43,7 +44,7 @@ func (k *Keychain) AddKey(email string, app int) *Key {
 		newId,
 		email,
 		GetSha256Hash(email), 
-		getUuid(), // need to create random string to act as key
+		getRandomString(32), // need to create random string to act as key
 		app,
 	}
 
@@ -99,8 +100,13 @@ func GetSha256Hash(text string) string {
     return hex.EncodeToString(hasher.Sum(nil))
 }
 
-func getUuid() string {
-	u, _ := uuid.NewV4()
+func getRandomString(numBytes int) string {
+	key := make([]byte, numBytes)
+	_, err := rand.Read(key)
+	if err != nil {
+		fmt.Println("Error getting random bytes", err.Error())
+	}
 	
-	return u.String()
+	return base64.StdEncoding.EncodeToString(key)
+	
 }
