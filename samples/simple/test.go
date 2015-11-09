@@ -11,21 +11,24 @@ import (
 	"io/ioutil"
 	"encoding/json"
 	"encoding/base64"
+	"time"
 )
 
 func main() {
-	fmt.Println("Starting submarine webservice")
+	fmt.Println("\nStarting submarine webservice\n")
 	go server.StartServer()
+	time.Sleep(2 * time.Second)
 
-	fmt.Println("Creating new app")
+	fmt.Println("\nCreating new app\n")
+	time.Sleep(2 * time.Second)
 	app := createApp()
-	fmt.Println("Created app:", app.Id)
 	
-	fmt.Println("Signing up new customer")
+	fmt.Println("\nSigning up new customer\n")
+	time.Sleep(2 * time.Second)
 	key := createKey(app)
-	fmt.Println("Signed up new customer", key.Email)
 	
-	fmt.Println("Encrypt and store the user's age")
+	fmt.Println("\nEncrypt and store the user's age\n")
+	time.Sleep(2 * time.Second)
 	decodedKey, _ := base64.StdEncoding.DecodeString(key.DO_NOT_STORE_DO_NOT_LOG)
 	encryptedAge, err := storage.Encrypt(decodedKey, []byte("4"))
 	
@@ -35,14 +38,18 @@ func main() {
 	
 	storage.StoreData(key.Email+"encrypted_age", string(encryptedAge[:]))
 	
-	fmt.Println("Age is now hidden in the data", storage.RetrieveData(key.Email+"encrypted_age"))
+	fmt.Println("\nAge is now hidden in the data:", storage.RetrieveData(key.Email+"encrypted_age"), "\n")
+	fmt.Println()
+	time.Sleep(2 * time.Second)
 	
-	fmt.Println("Later, user logs back in and wants to see their age")
-	fmt.Println("We ask submarine for the user's key and decrypt the data")
+	fmt.Println("\nLater, user logs back in and wants to see their age")
+	fmt.Println("We ask submarine for the user's key and decrypt the data\n")
+	time.Sleep(2 * time.Second)
 	storedEncryptedAge := storage.RetrieveData(key.Email+"encrypted_age")
 	
 	decryptedAge, _ := storage.Decrypt(decodedKey, []byte(storedEncryptedAge))
-	fmt.Println("Now we have the decrypted age", string(decryptedAge[:]))
+	fmt.Println("\nNow we have the decrypted age:", string(decryptedAge[:]), "\n")
+	time.Sleep(2 * time.Second)
 }   
 
 func createApp() apps.App{
@@ -94,7 +101,7 @@ func doPost(url, jsonStr string, header *Header) []byte {
 	//fmt.Println("response Status:", resp.Status)
     //fmt.Println("response Headers:", resp.Header)
     body, _ := ioutil.ReadAll(resp.Body)
-    fmt.Println("response Body:", string(body))
+    //fmt.Println("response Body:", string(body))
 	
 	return body
 	

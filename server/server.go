@@ -38,6 +38,8 @@ type WebService interface {
 	// (note this specific case is usually not supported unless each entry
 	// is also a collection).
 	WebPost(params martini.Params, req *http.Request) (int, string)
+	
+	WebDelete(params martini.Params, req *http.Request) (int, string)
 }
 
 func registerWebService(webService WebService,
@@ -50,4 +52,6 @@ func registerWebService(webService WebService,
 	classicMartini.Post(path, webService.WebPost)
 	classicMartini.Post(path+"/:id", webService.WebPost)
 
+	classicMartini.Delete(path, webService.WebDelete)
+	classicMartini.Delete(path+"/:id", webService.WebDelete)
 }

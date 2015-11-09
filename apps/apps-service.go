@@ -81,3 +81,11 @@ func (a *Apps) WebPost(params martini.Params,
 	return http.StatusOK, string(encodedApp)
 	
 }
+
+func (a *Apps) WebDelete(params martini.Params,
+	req *http.Request) (int, string) {
+		
+	defer req.Body.Close()
+	
+	return http.StatusMethodNotAllowed, "method not allowed"
+}

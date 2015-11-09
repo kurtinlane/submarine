@@ -90,3 +90,14 @@ func (k *Keychain) WebPost(params martini.Params,
 	return http.StatusOK, string(encodedKey)
 	
 }
+
+func (a *Keychain) WebDelete(params martini.Params,
+	req *http.Request) (int, string) {
+	defer req.Body.Close()
+	
+	id, _ := strconv.Atoi(params["id"])
+	
+	a.RemoveKey(id)
+	
+	return http.StatusOK, "Done."
+}

@@ -85,6 +85,13 @@ func (k *Keychain) GetAllKeys() []*Key {
 }
 
 // RemoveAllEntries removes all entries from the Guest Book.
+func (k *Keychain) RemoveKey(id int) {
+	key, _ := k.GetKey(id)
+	
+	key.DO_NOT_STORE_DO_NOT_LOG = ""
+}
+
+// RemoveAllEntries removes all entries from the Guest Book.
 func (k *Keychain) RemoveAllKeys() {
 	// Acquire our lock and make sure it will be released.
 	k.mutex.Lock()
