@@ -19,3 +19,16 @@ Bettrnet uses this random string as an encryption key to encrypt User's data. Ev
 
 If at some point User does not trust bettrnet with their data anymore, User can delete their bettrnet key through submarine. Now, bettrnet no longer has access to any data that it encrypted with User's key.
 
+# samples
+
+As submarine progresses we will continually add some simple samples that consume submarine's API to encrypt data and empower users' to maintain control of their personal data.
+
+## Running a sample
+
+`go run samples/interactive/test.go`
+
+###all samples
+* [interactive](https://github.com/kurtinlane/submarine/tree/master/samples/interactive)
+* [simple](https://github.com/kurtinlane/submarine/tree/master/samples/simple)
+
+
