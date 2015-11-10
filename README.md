@@ -19,6 +19,8 @@ Bettrnet uses this random string as an encryption key to encrypt User's data. Ev
 
 If at some point User does not trust bettrnet with their data anymore, User can delete their bettrnet key through submarine. Now, bettrnet no longer has access to any data that it encrypted with User's key.
 
+More info in a blog post [here](http://troy.shldz.us/blog/2015/11/08/submarine-open-source-service-that-takes-an-email-and-returns-a-key/).
+
 # samples
 
 As submarine progresses we will continually add some simple samples that consume submarine's API to encrypt data and empower users' to maintain control of their personal data.
