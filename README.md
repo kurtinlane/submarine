@@ -33,4 +33,10 @@ As submarine progresses we will continually add some simple samples that consume
 * [interactive](https://github.com/kurtinlane/submarine/tree/master/samples/interactive)
 * [simple](https://github.com/kurtinlane/submarine/tree/master/samples/simple)
 
+## Running on Developer Google App Engine
+
+```
+cd server
+goapp serve
+```
 
