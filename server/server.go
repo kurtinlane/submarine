@@ -7,6 +7,22 @@ import (
 	"net/http"
 )
 
+
+func init() {
+	//Separate apis because use different middleware to authenticate requests... might be a better way to handle this
+	publicApi := martini.Classic()
+	keychain := keys.NewKeychain()
+	registerWebService(keychain, publicApi)
+	publicApi.Use(apps.ResolveApp)
+	
+	privateApi := martini.Classic()
+	apps := apps.RetreiveAppsList()
+	registerWebService(apps, privateApi)
+	
+	http.Handle("/api/v1/", publicApi)
+	http.Handle("/", privateApi)
+}
+
 func StartServer() {
 	//Separate apis because use different middleware to authenticate requests... might be a better way to handle this
 	publicApi := martini.Classic()
