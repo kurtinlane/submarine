@@ -73,7 +73,7 @@ func main() {
 		case "3":
 			fmt.Println("\nRemoving your key from submarine\n")
 			apiKeyHeader := &Header{"API-KEY", app.SECRET_API_KEY}
-			doDelete("http://localhost:3000/keys/"+string(key.Id), apiKeyHeader)
+			doDelete("http://localhost:3000/api/v1/keys/"+string(key.Id), apiKeyHeader)
 			key.DO_NOT_STORE_DO_NOT_LOG = ""
 			
 		}
@@ -109,7 +109,7 @@ func createKey(app apps.App, email string) keys.Key{
 	reqJson := "{ \"Email\":\"" + email + "\", \"App\": 0 }"
 	
 	fmt.Println(reqJson)
-	keyJson := doPost("http://localhost:3000/keys", reqJson, apiKeyHeader)
+	keyJson := doPost("http://localhost:3000/api/v1/keys", reqJson, apiKeyHeader)
 
 	parseJson(&key, keyJson)
 	
@@ -123,7 +123,7 @@ func getKey(app apps.App, email string) keys.Key{
 	reqJson := "{ \"Email\":\"" + email + "\", \"App\": 0 }"
 	
 	fmt.Println(reqJson)
-	keyJson := doPost("http://localhost:3000/keys", reqJson, apiKeyHeader)
+	keyJson := doPost("http://localhost:3000/api/v1/keys", reqJson, apiKeyHeader)
 
 	parseJson(&key, keyJson)
 	

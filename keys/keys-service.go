@@ -13,7 +13,7 @@ import (
 // GetPath implements webservice.GetPath.
 func (k *Keychain) GetPath() string {
 	// Associate this service with http://host:port/keys.
-	return "/keys"
+	return "/api/v1/keys"
 }
 
 // WebGet implements webservice.WebGet.

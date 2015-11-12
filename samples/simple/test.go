@@ -64,7 +64,7 @@ func createKey(app apps.App) keys.Key{
 	apiKeyHeader := &Header{"API-KEY", app.SECRET_API_KEY}
 	
 	var key keys.Key
-	keyJson := doPost("http://localhost:3000/keys", `{ "Email":"troy@bettrnet.com", "App": 0 }`, apiKeyHeader) //Passing in app.Id doesn't work... not sure why
+	keyJson := doPost("http://localhost:3000/api/v1/keys", `{ "Email":"troy@bettrnet.com", "App": 0 }`, apiKeyHeader) //Passing in app.Id doesn't work... not sure why
 	parseJson(&key, keyJson)
 	
 	return key
