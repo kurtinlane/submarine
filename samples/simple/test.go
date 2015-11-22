@@ -14,7 +14,7 @@ import (
 	"time"
 )
 
-func main() {
+func init() {
 	fmt.Println("\nStarting submarine webservice\n")
 	go server.StartServer()
 	time.Sleep(2 * time.Second)

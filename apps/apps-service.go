@@ -1,71 +1,51 @@
 package apps
 
 import (
+	//"fmt"
 	"github.com/go-martini/martini"
 	"net/http"
 	"encoding/json"
-	"strconv"
+	//"strconv"
 	"io/ioutil"
+	"appengine"
+	"github.com/kurtinlane/submarine/models"
 )
 
-// GetPath implements webservice.GetPath.
-func (a *Apps) GetPath() string {
-	// Associate this service with http://host:port/keys.
-	return "/apps"
+func RegisterWebService(server *martini.ClassicMartini) {
+	path := "/apps"
+	
+	server.Get(path, Get)
+	server.Get(path+"/:id", Get)
+
+	server.Post(path, Post)
+	server.Post(path+"/:id", Post)
+
+	server.Delete(path, Delete)
+	server.Delete(path+"/:id", Delete)
 }
 
-// WebGet implements webservice.WebGet.
-func (a *Apps) WebGet(params martini.Params) (int, string) {
-	if len(params) == 0 {
-		// Failed encoding collection.
-		return http.StatusBadRequest, "bad request"
-	}
-
-	// Convert id to integer.
-	id, err := strconv.Atoi(params["id"])
-	if err != nil {
-		// Id was not a number.
-		return http.StatusBadRequest, "invalid entry id"
-	}
-
-	// Get entry identified by id.
-	entry, err := a.GetApp(id)
-	if err != nil {
-		// Entry not found.
-		return http.StatusNotFound, "entry not found"
-	}
-
-	// Encode entry in JSON.
-	encodedEntry, err := json.Marshal(entry)
-	if err != nil {
-		// Failed encoding entry.
-		return http.StatusInternalServerError, "internal error"
-	}
-
-	// Return encoded entry.
-	return http.StatusOK, string(encodedEntry)
+func Get(params martini.Params) (int, string) {
+	
+	return http.StatusOK, string("")
 }
 
-// WebPost implements webservice.WebPost.
-func (a *Apps) WebPost(params martini.Params,
-	req *http.Request) (int, string) {
-		
+func Post(params martini.Params, req *http.Request) (int, string) {
 	// Make sure Body is closed when we are done.
 	defer req.Body.Close()
-
+	
 	// Read request body.
 	requestBody, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		return http.StatusInternalServerError, "internal error"
 	}
-
+	
+	// No keys in params. This is not supported.
 	if len(params) != 0 {
-		// No keys in params. This is not supported.
 		return http.StatusMethodNotAllowed, "method not allowed"
 	}
-
-	// Unmarshal entry sent by the user.
-	var app App
+	
+	// Unmarshal new app sent in request.
+	var app models.App
 	err = json.Unmarshal(requestBody, &app)
 	if err != nil {
 		// Could not unmarshal entry.
@@ -73,18 +53,16 @@ func (a *Apps) WebPost(params martini.Params,
 	}
 
 	// Add entry provided by the user.
-	createdApp := a.AddApp(app.Name)
+	context := appengine.NewContext(req) 
+	createdApp, err := AddApp(app.Name, context)
 	
 	encodedApp, err := json.Marshal(createdApp)
 
 	// Everything is fine.
 	return http.StatusOK, string(encodedApp)
-	
 }
 
-func (a *Apps) WebDelete(params martini.Params,
-	req *http.Request) (int, string) {
-		
+func Delete(params martini.Params, req *http.Request) (int, string) {
 	defer req.Body.Close()
 	
 	return http.StatusMethodNotAllowed, "method not allowed"

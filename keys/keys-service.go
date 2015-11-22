@@ -7,7 +7,7 @@ import (
 	"encoding/json"
 	"strconv"
 	"io/ioutil"
-	//"github.com/kurtinlane/submarine/apps"
+	"github.com/kurtinlane/submarine/models"
 )
 
 // GetPath implements webservice.GetPath.
@@ -74,7 +74,7 @@ func (k *Keychain) WebPost(params martini.Params,
 	}
 
 	// Unmarshal entry sent by the user.
-	var key Key
+	var key models.Key
 	err = json.Unmarshal(requestBody, &key)
 	if err != nil {
 		// Could not unmarshal entry.

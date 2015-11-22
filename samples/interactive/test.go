@@ -1,9 +1,6 @@
 package main
 
 import (
-	"github.com/kurtinlane/submarine/server"
-	"github.com/kurtinlane/submarine/apps"
-	"github.com/kurtinlane/submarine/keys"
 	"github.com/kurtinlane/submarine/samples/simple/storage"
 	"fmt"
 	"net/http"
@@ -15,11 +12,11 @@ import (
 	"bufio"
 	"os"
 	"strings"
+	"github.com/kurtinlane/submarine/models"
 )
 
 func main() {
 	fmt.Println("\nStarting submarine webservice\n")
-	go server.StartServer()
 	time.Sleep(2 * time.Second)
 
 	fmt.Println("\nStarting webservice \"StoreMyData\"\n")
@@ -73,7 +70,7 @@ func main() {
 		case "3":
 			fmt.Println("\nRemoving your key from submarine\n")
 			apiKeyHeader := &Header{"API-KEY", app.SECRET_API_KEY}
-			doDelete("http://localhost:3000/api/v1/keys/"+string(key.Id), apiKeyHeader)
+			doDelete("http://localhost:8080/api/v1/keys/"+string(key.Id), apiKeyHeader)
 			key.DO_NOT_STORE_DO_NOT_LOG = ""
 			
 		}
@@ -94,36 +91,36 @@ func decodeKey(encodedKey string) []byte {
 	return decodedKey
 }
 
-func createApp() apps.App{
-	var app apps.App
-	appJson := doPost("http://localhost:3001/apps", `{"Name":"simple"}`, nil)
+func createApp() models.App{
+	var app models.App
+	appJson := doPost("http://localhost:8080/apps", `{"Name":"simple"}`, nil)
 	parseJson(&app, appJson)
 	
 	return app
 }
 
-func createKey(app apps.App, email string) keys.Key{
+func createKey(app models.App, email string) models.Key{
 	apiKeyHeader := &Header{"API-KEY", app.SECRET_API_KEY}
 	
-	var key keys.Key
+	var key models.Key
 	reqJson := "{ \"Email\":\"" + email + "\", \"App\": 0 }"
 	
 	fmt.Println(reqJson)
-	keyJson := doPost("http://localhost:3000/api/v1/keys", reqJson, apiKeyHeader)
+	keyJson := doPost("http://localhost:8080/api/v1/keys", reqJson, apiKeyHeader)
 
 	parseJson(&key, keyJson)
 	
 	return key
 }
 
-func getKey(app apps.App, email string) keys.Key{
+func getKey(app models.App, email string) models.Key{
 	apiKeyHeader := &Header{"API-KEY", app.SECRET_API_KEY}
 	
-	var key keys.Key
+	var key models.Key
 	reqJson := "{ \"Email\":\"" + email + "\", \"App\": 0 }"
 	
 	fmt.Println(reqJson)
-	keyJson := doPost("http://localhost:3000/api/v1/keys", reqJson, apiKeyHeader)
+	keyJson := doPost("http://localhost:8080/api/v1/keys", reqJson, apiKeyHeader)
 
 	parseJson(&key, keyJson)
 	

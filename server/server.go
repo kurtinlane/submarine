@@ -16,8 +16,8 @@ func init() {
 	publicApi.Use(apps.ResolveApp)
 	
 	privateApi := martini.Classic()
-	apps := apps.RetreiveAppsList()
-	registerWebService(apps, privateApi)
+	
+	apps.RegisterWebService(privateApi)
 	
 	http.Handle("/api/v1/", publicApi)
 	http.Handle("/", privateApi)
@@ -29,12 +29,13 @@ func StartServer() {
 	keychain := keys.NewKeychain()
 	registerWebService(keychain, publicApi)
 	publicApi.Use(apps.ResolveApp)
-	go publicApi.Run()
 	
 	privateApi := martini.Classic()
-	apps := apps.RetreiveAppsList()
-	registerWebService(apps, privateApi)
-	privateApi.RunOnAddr(":3001")
+	
+	apps.RegisterWebService(privateApi)
+	
+	http.Handle("/api/v1/", publicApi)
+	http.Handle("/", privateApi)
 }
 
 // WebService is the interface that should be implemented by types that want to
