@@ -3,6 +3,7 @@ package apps
 import (
 	"net/http"
 	"github.com/go-martini/martini"
+	"appengine"
 )
 
 func ResolveApp(context martini.Context, res http.ResponseWriter, req *http.Request){
@@ -11,7 +12,8 @@ func ResolveApp(context martini.Context, res http.ResponseWriter, req *http.Requ
 	if apiKey == "" {
 		http.Error(res, "bad request", http.StatusBadRequest)
 	} else {
-		app, err := GetAppWithApiKey(apiKey)
+		appEngineContext := appengine.NewContext(req) 
+		app, err := GetAppWithApiKey(apiKey, appEngineContext)
 		
 		if err != nil {
 			http.Error(res, err.Error(), http.StatusBadRequest)

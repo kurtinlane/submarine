@@ -8,19 +8,27 @@ import (
 	"strconv"
 	"io/ioutil"
 	"github.com/kurtinlane/submarine/models"
+	"appengine"
 )
 
-// GetPath implements webservice.GetPath.
-func (k *Keychain) GetPath() string {
-	// Associate this service with http://host:port/keys.
-	return "/api/v1/keys"
+func RegisterWebService(server *martini.ClassicMartini) {
+	path := "/api/v1/keys"
+	
+	server.Get(path, Get)
+	server.Get(path+"/:id", Get)
+
+	server.Post(path, Post)
+	server.Post(path+"/:id", Post)
+
+	server.Delete(path, Delete)
+	server.Delete(path+"/:id", Delete)
 }
 
 // WebGet implements webservice.WebGet.
-func (k *Keychain) WebGet(params martini.Params) (int, string) {
+func Get(params martini.Params) (int, string) {
 	if len(params) == 0 {
 		// No params. Return entire collection encoded as JSON.
-		encodedEntries, err := json.Marshal(k.GetAllKeys())
+		encodedEntries, err := json.Marshal(GetAllKeys())
 		if err != nil {
 			// Failed encoding collection.
 			return http.StatusInternalServerError, "internal error"
@@ -38,7 +46,7 @@ func (k *Keychain) WebGet(params martini.Params) (int, string) {
 	}
 
 	// Get entry identified by id.
-	entry, err := k.GetKey(id)
+	entry, err := GetKey(id)
 	if err != nil {
 		// Entry not found.
 		return http.StatusNotFound, "entry not found"
@@ -56,7 +64,7 @@ func (k *Keychain) WebGet(params martini.Params) (int, string) {
 }
 
 // WebPost implements webservice.WebPost.
-func (k *Keychain) WebPost(params martini.Params,
+func Post(params martini.Params,
 	req *http.Request) (int, string) {
 		
 	// Make sure Body is closed when we are done.
@@ -82,7 +90,8 @@ func (k *Keychain) WebPost(params martini.Params,
 	}
 
 	// Add entry provided by the user.
-	createdKey := k.AddKey(key.Email, key.App)
+	context := appengine.NewContext(req) 
+	createdKey, _ := AddKey(key.Email, key.App, context)
 	
 	encodedKey, err := json.Marshal(createdKey)
 
@@ -91,13 +100,13 @@ func (k *Keychain) WebPost(params martini.Params,
 	
 }
 
-func (a *Keychain) WebDelete(params martini.Params,
+func Delete(params martini.Params,
 	req *http.Request) (int, string) {
 	defer req.Body.Close()
 	
 	id, _ := strconv.Atoi(params["id"])
 	
-	a.RemoveKey(id)
+	RemoveKey(id)
 	
 	return http.StatusOK, "Done."
 }

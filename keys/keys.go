@@ -3,96 +3,54 @@ package keys
 
 import (
 	"fmt"
-	"sync"
 	"crypto/sha256"
 	"encoding/hex"
 	"crypto/rand"
 	"encoding/base64"
+	"appengine"
+    "appengine/datastore"
 	"github.com/kurtinlane/submarine/models"
 )
 
-
-type Keychain struct {
-	keys []*models.Key
-	mutex *sync.Mutex
-}
-
-func NewKeychain() *Keychain {
-	return &Keychain{
-		make([]*models.Key, 0),
-		new(sync.Mutex),
-	}
-}
-
 // AddEntry adds a new GuestBookEntry with the provided data.
-func (k *Keychain) AddKey(email string, app int) *models.Key {
-	// Acquire our lock and make sure it will be released.
-	k.mutex.Lock()
-	defer k.mutex.Unlock()
-
-	// Get an id for this entry.
-	newId := len(k.keys)
-
-	// Create new entry with the given data and the computed newId.
-	newEntry := &models.Key{
-		newId,
+func AddKey(email string, app int, context appengine.Context) (*models.Key, error) {
+	newKey := datastore.NewIncompleteKey(context, "submarinekey", nil)
+	newSubmarineKey := &models.Key{
 		email,
 		GetSha256Hash(email), 
 		getRandomString(32), // need to create random string to act as key
 		app,
 	}
-
-	// Add entry to the Guest Book.
-	k.keys = append(k.keys, newEntry)
-
-	// Return the Id for the new entry.
-	return newEntry
+	_, err := datastore.Put(context, newKey, newSubmarineKey)
+    if err != nil {
+        return nil, err
+    }
+	
+	return newSubmarineKey, nil
 }
 
 // GetEntry returns the entry identified by the given id or an error if it can
 // not find it.
-func (k *Keychain) GetKey(id int) (*models.Key, error) {
-	// Check if we have a valid id.
-	if id < 0 || id >= len(k.keys) ||
-		k.keys[id] == nil {
-		return nil, fmt.Errorf("invalid id")
-	}
+func GetKey(id int) (*models.Key, error) {
 
-	// Return the associated entry.
-	return k.keys[id], nil
+	return nil, nil
 }
 
 // GetAllEntries returns all non-nil entries in the Guest Book.
-func (k *Keychain) GetAllKeys() []*models.Key {
-	// Placeholder for the entries we will be returning.
-	entries := make([]*models.Key, 0)
-
-	// Iterate through all existig entries.
-	for _, entry := range k.keys {
-		if entry != nil {
-			// Entry is not nil, so we want to return it.
-			entries = append(entries, entry)
-		}
-	}
-
-	return entries
+func GetAllKeys() []*models.Key {
+	return nil
 }
 
 // RemoveAllEntries removes all entries from the Guest Book.
-func (k *Keychain) RemoveKey(id int) {
-	key, _ := k.GetKey(id)
+func RemoveKey(id int) {
+	key, _ := GetKey(id)
 	
 	key.DO_NOT_STORE_DO_NOT_LOG = ""
 }
 
 // RemoveAllEntries removes all entries from the Guest Book.
-func (k *Keychain) RemoveAllKeys() {
-	// Acquire our lock and make sure it will be released.
-	k.mutex.Lock()
-	defer k.mutex.Unlock()
-
-	// Reset guestbook to a new empty one.
-	k.keys = []*models.Key{}
+func RemoveAllKeys() {
+	
 }
 
 func GetSha256Hash(text string) string {
