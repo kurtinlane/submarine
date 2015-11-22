@@ -10,17 +10,18 @@ import (
 	"appengine"
     "appengine/datastore"
 	"github.com/kurtinlane/submarine/models"
+	"errors"
 )
 
-// AddEntry adds a new GuestBookEntry with the provided data.
-func AddKey(email string, app int, context appengine.Context) (*models.Key, error) {
-	newKey := datastore.NewIncompleteKey(context, "submarinekey", nil)
+func AddKey(email string, app *models.App, context appengine.Context) (*models.Key, error) {
+	appKey := datastore.NewKey(context, "app", "", app.Id, nil)
+	newKey := datastore.NewKey(context, "submarinekey", GetSha256Hash(email), 0, appKey)
+	
 	newSubmarineKey := &models.Key{
-		0,
 		email,
 		GetSha256Hash(email), 
 		getRandomString(32), // need to create random string to act as key
-		app,
+		app.Id,
 	}
 	_, err := datastore.Put(context, newKey, newSubmarineKey)
     if err != nil {
@@ -32,27 +33,40 @@ func AddKey(email string, app int, context appengine.Context) (*models.Key, erro
 
 // GetEntry returns the entry identified by the given id or an error if it can
 // not find it.
-func GetKey(id int) (*models.Key, error) {
+func GetKey(id int, context appengine.Context) (*models.Key, error) {
 
 	return nil, nil
 }
 
-// GetAllEntries returns all non-nil entries in the Guest Book.
-func GetAllKeys() []*models.Key {
-	return nil
+func GetKeyForEmail(email string, context appengine.Context) (*models.Key, error) {
+	context.Debugf("Getting subKey for email: " + email)
+	emailHash := GetSha256Hash(email)
+	
+	query := datastore.NewQuery("submarinekey").
+			Filter("Sha256 =", emailHash)
+
+	iter := query.Run(context)
+				
+	for {
+		var subKey models.Key
+		_, err := iter.Next(&subKey)
+		if err != nil {
+			context.Debugf("Cannot find subKey")
+			err := errors.New("cannot find subKey")
+			return nil, err
+		}
+		
+		return &subKey, nil
+	}
 }
 
 // RemoveAllEntries removes all entries from the Guest Book.
-func RemoveKey(id int) {
-	key, _ := GetKey(id)
+func RemoveKey(id int, context appengine.Context) {
+	key, _ := GetKey(id, context)
 	
 	key.DO_NOT_STORE_DO_NOT_LOG = ""
 }
 
-// RemoveAllEntries removes all entries from the Guest Book.
-func RemoveAllKeys() {
-	
-}
 
 func GetSha256Hash(text string) string {
     hasher := sha256.New()

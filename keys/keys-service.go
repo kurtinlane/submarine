@@ -5,7 +5,6 @@ import (
 	"github.com/go-martini/martini"
 	"net/http"
 	"encoding/json"
-	"strconv"
 	"io/ioutil"
 	"github.com/kurtinlane/submarine/models"
 	"appengine"
@@ -14,58 +13,40 @@ import (
 func RegisterWebService(server *martini.ClassicMartini) {
 	path := "/api/v1/keys"
 	
-	server.Get(path, Get)
-	server.Get(path+"/:id", Get)
+	//server.Get(path, Get)
+	server.Get(path+"/:email", Get)
 
 	server.Post(path, Post)
-	server.Post(path+"/:id", Post)
 
 	server.Delete(path, Delete)
 	server.Delete(path+"/:id", Delete)
 }
 
-// WebGet implements webservice.WebGet.
-func Get(params martini.Params) (int, string) {
-	if len(params) == 0 {
-		// No params. Return entire collection encoded as JSON.
-		encodedEntries, err := json.Marshal(GetAllKeys())
-		if err != nil {
-			// Failed encoding collection.
-			return http.StatusInternalServerError, "internal error"
-		}
+func Get(params martini.Params, req *http.Request) (int, string) {
 
-		// Return encoded entries.
-		return http.StatusOK, string(encodedEntries)
-	}
+	email := params["email"]
 
-	// Convert id to integer.
-	id, err := strconv.Atoi(params["id"])
-	if err != nil {
-		// Id was not a number.
-		return http.StatusBadRequest, "invalid entry id"
-	}
-
-	// Get entry identified by id.
-	entry, err := GetKey(id)
+	context := appengine.NewContext(req)
+	subkey, err := GetKeyForEmail(email, context)
 	if err != nil {
 		// Entry not found.
 		return http.StatusNotFound, "entry not found"
 	}
 
 	// Encode entry in JSON.
-	encodedEntry, err := json.Marshal(entry)
+	encodedSubkey, err := json.Marshal(subkey)
 	if err != nil {
 		// Failed encoding entry.
 		return http.StatusInternalServerError, "internal error"
 	}
 
 	// Return encoded entry.
-	return http.StatusOK, string(encodedEntry)
+	return http.StatusOK, string(encodedSubkey)
 }
 
 // WebPost implements webservice.WebPost.
 func Post(params martini.Params,
-	req *http.Request) (int, string) {
+	req *http.Request, app *models.App) (int, string) {
 		
 	// Make sure Body is closed when we are done.
 	defer req.Body.Close()
@@ -91,7 +72,7 @@ func Post(params martini.Params,
 
 	// Add entry provided by the user.
 	context := appengine.NewContext(req) 
-	createdKey, _ := AddKey(key.Email, key.App, context)
+	createdKey, _ := AddKey(key.Email, app, context)
 	
 	encodedKey, err := json.Marshal(createdKey)
 
@@ -104,9 +85,9 @@ func Delete(params martini.Params,
 	req *http.Request) (int, string) {
 	defer req.Body.Close()
 	
-	id, _ := strconv.Atoi(params["id"])
+	// id, _ := strconv.Atoi(params["id"])
 	
-	RemoveKey(id)
+	// RemoveKey(id)
 	
 	return http.StatusOK, "Done."
 }
