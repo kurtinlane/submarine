@@ -16,6 +16,7 @@ import (
 func AddKey(email string, app int, context appengine.Context) (*models.Key, error) {
 	newKey := datastore.NewIncompleteKey(context, "submarinekey", nil)
 	newSubmarineKey := &models.Key{
+		0,
 		email,
 		GetSha256Hash(email), 
 		getRandomString(32), // need to create random string to act as key
