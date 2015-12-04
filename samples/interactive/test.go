@@ -70,7 +70,7 @@ func main() {
 		case "3":
 			fmt.Println("\nRemoving your key from submarine\n")
 			apiKeyHeader := &Header{"API-KEY", app.SECRET_API_KEY}
-			doDelete("http://localhost:8080/api/v1/keys/"+string(key.Id), apiKeyHeader)
+			doDelete("http://localhost:8080/api/v1/keys/?user="+string(key.Email), apiKeyHeader)
 			key.DO_NOT_STORE_DO_NOT_LOG = ""
 			
 		}

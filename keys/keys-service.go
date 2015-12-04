@@ -13,8 +13,8 @@ import (
 func RegisterWebService(server *martini.ClassicMartini) {
 	path := "/api/v1/keys"
 	
-	//server.Get(path, Get)
-	server.Get(path+"/:email", Get)
+	server.Get(path, Get)
+	//server.Get(path+"/:email", Get)
 
 	server.Post(path, Post)
 
@@ -24,7 +24,7 @@ func RegisterWebService(server *martini.ClassicMartini) {
 
 func Get(params martini.Params, req *http.Request) (int, string) {
 
-	email := params["email"]
+	email := params["user"]
 
 	context := appengine.NewContext(req)
 	subkey, err := GetKeyForEmail(email, context)
